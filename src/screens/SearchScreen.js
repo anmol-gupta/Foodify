@@ -1,35 +1,38 @@
-import React, { useState } from "react";
-import { Text, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, View, ScrollView } from "react-native";
 import SearchBar from "../components/SearchBar";
-import zomato from "../api/zomato";
-
+import ResultsList from "../components/ResultsList";
+import useResults from "../hooks/useResults";
 const SearchScreen = () => {
   const [term, setTerm] = useState("");
-  const [results, setResults] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const searchApi = () => {
-    zomato
-      .get("/search", {
-        params: {
-          q: term,
-          count: 50
-        }
-      })
-      .then(response => {
-        setResults(response.data.restaurants);
-      })
-      .then(error => setErrorMessage("Something Went Wrong!"));
+  const [searchApi, results, errorMessage] = useResults();
+  const filterResultsByPrice = price => {
+    return results.filter(result => {
+      return (
+        result.restaurant.average_cost_for_two <= price &&
+        result.restaurant.average_cost_for_two > price - 200
+      );
+    });
   };
   return (
-    <View>
+    // <View style={{flex:1}}>
+    <>
       <SearchBar
         term={term}
         onTermChange={newTerm => setTerm(newTerm)}
-        onTermSubmit={searchApi}
+        onTermSubmit={() => searchApi(term)}
       />
-      {errorMessage !== "" ? <Text>{errorMessage}</Text> : null}
-      <Text>We have found {results.length} results.</Text>
-    </View>
+      {errorMessage != "" ? <Text>{errorMessage}</Text> : null}
+      <ScrollView>
+        <ResultsList
+          results={filterResultsByPrice(200)}
+          title="Cost Effective"
+        />
+        <ResultsList results={filterResultsByPrice(500)} title="Bit Pricier" />
+        <ResultsList results={filterResultsByPrice(700)} title="Big Splender" />
+      </ScrollView>
+    {/* </View> */}
+    </>
   );
 };
 
