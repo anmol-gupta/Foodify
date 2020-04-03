@@ -28,10 +28,16 @@ const SearchScreen = () => {
           results={filterResultsByPrice(200)}
           title="Cost Effective"
         />
-        <ResultsList results={filterResultsByPrice(500)} title="Bit Pricier" />
-        <ResultsList results={filterResultsByPrice(700)} title="Big Splender" />
+        <ResultsList
+          results={filterResultsByPrice(500)}
+          title="Bit Pricier"
+        />
+        <ResultsList
+          results={filterResultsByPrice(700)}
+          title="Big Splender"
+        />
       </ScrollView>
-    {/* </View> */}
+      {/* </View> */}
     </>
   );
 };
